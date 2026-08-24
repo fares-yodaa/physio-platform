@@ -2,7 +2,8 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import type { Landmark, CustomJoint, JointPosition, JointAngles, RepThresholds } from '../../types';
 import type { AngleArc } from '../../lib/editorAngles';
 import { drawSkeletonOverlay } from '../../lib/skeletonDraw';
-import { BODY_LANDMARKS, LANDMARK_INDEX } from '../../lib/constants';
+import { BODY_LANDMARKS } from '../../lib/constants';
+import { resolvePoint } from '../../lib/editorAngles';
 
 interface JointEditorProps {
   landmarks: Landmark[] | null;
@@ -101,20 +102,10 @@ export default function JointEditor({
       let best: string | null = null;
       let bestDist = HIT_RADIUS;
       for (const name of BODY_LANDMARKS) {
-        const override = jointPositions[name];
-        let px: number | undefined;
-        let py: number | undefined;
-        if (override) {
-          px = override.x * width;
-          py = override.y * height;
-        } else {
-          const idx = LANDMARK_INDEX[name as keyof typeof LANDMARK_INDEX];
-          if (idx === undefined) continue;
-          const lm = landmarks[idx];
-          if (!lm || lm.visibility < 0.2) continue;
-          px = lm.x * width;
-          py = lm.y * height;
-        }
+        const p = resolvePoint(name, landmarks, jointPositions, customJoints, 0.12);
+        if (!p) continue;
+        const px = p.x * width;
+        const py = p.y * height;
         const d = Math.hypot(mx - px, my - py);
         if (d < bestDist) {
           bestDist = d;
@@ -123,7 +114,7 @@ export default function JointEditor({
       }
       return best;
     },
-    [landmarks, jointPositions, width, height]
+    [landmarks, jointPositions, customJoints, width, height]
   );
 
   const hitTestCustom = useCallback(

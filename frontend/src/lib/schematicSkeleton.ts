@@ -3,6 +3,8 @@ import { BODY_CONNECTIONS, BODY_LANDMARKS, JOINT_ANGLE_DEFINITIONS } from './con
 /** Fixed front-facing stick figure (normalized 0–1). */
 export const SCHEMATIC_POSITIONS: Record<string, { x: number; y: number }> = {
   nose: { x: 0.5, y: 0.1 },
+  left_ear: { x: 0.42, y: 0.11 },
+  right_ear: { x: 0.58, y: 0.11 },
   left_shoulder: { x: 0.38, y: 0.24 },
   right_shoulder: { x: 0.62, y: 0.24 },
   left_elbow: { x: 0.28, y: 0.42 },

@@ -78,6 +78,14 @@ export function schematicPositionsForAngles(angleValues: Record<string, number>)
     const target = angleValues[id];
     if (target != null) applyOneAngle(pos, id, target);
   }
+  if (angleValues.neck != null) {
+    const midX = (pos.left_shoulder.x + pos.right_shoulder.x) / 2;
+    const span = (pos.right_shoulder.x - pos.left_shoulder.x) / 2;
+    const t = Math.max(0, Math.min(1, angleValues.neck / 70));
+    pos.nose = { x: midX + span * t * 0.9, y: pos.nose.y };
+    if (pos.left_ear) pos.left_ear = { x: 0.42 + span * t * 0.55, y: pos.left_ear.y };
+    if (pos.right_ear) pos.right_ear = { x: 0.58 + span * t * 0.4, y: pos.right_ear.y };
+  }
   return pos;
 }
 
@@ -85,6 +93,10 @@ export function baseSchematicAngles(): Record<string, number> {
   const pos = clonePositions();
   const angles: Record<string, number> = {};
   for (const [id, [aRef, bRef, cRef]] of Object.entries(JOINT_ANGLE_DEFINITIONS)) {
+    if (id === 'neck') {
+      angles.neck = 0;
+      continue;
+    }
     const a = pos[aRef];
     const b = pos[bRef];
     const c = pos[cRef];

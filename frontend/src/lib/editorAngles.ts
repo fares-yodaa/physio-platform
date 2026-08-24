@@ -1,5 +1,6 @@
 import { calculateAngle } from './angles';
 import { JOINT_ANGLE_DEFINITIONS, LANDMARK_INDEX, angleMeasurementTriples } from './constants';
+import { neckRotationDegrees, refineNose } from './neck';
 import type { Landmark, JointPosition, CustomJoint, CustomAngle, JointAngles } from '../types';
 
 export interface ResolvedPoint {
@@ -27,6 +28,24 @@ export function resolvePoint(
   }
 
   if (!landmarks) return null;
+
+  if (ref === 'neck_base') {
+    const ls = resolvePoint('left_shoulder', landmarks, jointPositions, customJoints, minVisibility);
+    const rs = resolvePoint('right_shoulder', landmarks, jointPositions, customJoints, minVisibility);
+    if (!ls || !rs) return null;
+    return {
+      x: (ls.x + rs.x) / 2,
+      y: (ls.y + rs.y) / 2,
+      z: (ls.z + rs.z) / 2,
+    };
+  }
+
+  if (ref === 'nose' && !jointPositions.nose) {
+    const tip = refineNose(landmarks);
+    if (tip && tip.visibility >= minVisibility) {
+      return { x: tip.x, y: tip.y, z: tip.z };
+    }
+  }
   const idx = LANDMARK_INDEX[ref as keyof typeof LANDMARK_INDEX];
   if (idx === undefined) return null;
   const lm = landmarks[idx];
@@ -58,6 +77,14 @@ function measureBuiltinAngle(
   customJoints: CustomJoint[],
   minVisibility = 0.3
 ): number | null {
+  if (angleId === 'neck') {
+    const ls = resolvePoint('left_shoulder', landmarks, jointPositions, customJoints, minVisibility);
+    const rs = resolvePoint('right_shoulder', landmarks, jointPositions, customJoints, minVisibility);
+    const nose = resolvePoint('nose', landmarks, jointPositions, customJoints, Math.min(minVisibility, 0.12));
+    if (!ls || !rs || !nose) return null;
+    return neckRotationDegrees(nose, ls, rs);
+  }
+
   for (const [aRef, bRef, cRef] of angleMeasurementTriples(angleId)) {
     const val = angleFromTriple(aRef, bRef, cRef, landmarks, jointPositions, customJoints, minVisibility);
     if (val !== null) return val;
@@ -147,6 +174,26 @@ export function computeAngleArcs(
   const addArc = (id: string, label: string, triples: [string, string, string][]) => {
     const value = angles[id];
     if (value === undefined) return;
+
+    if (id === 'neck') {
+      const base = resolvePoint('neck_base', landmarks, jointPositions, customJoints);
+      const nose = resolvePoint('nose', landmarks, jointPositions, customJoints, 0.12);
+      if (!base || !nose) return;
+      const bx = base.x * width;
+      const by = base.y * height;
+      const endAngle = Math.atan2(nose.y * height - by, nose.x * width - bx);
+      arcs.push({
+        id,
+        label,
+        bx,
+        by,
+        startAngle: -Math.PI / 2,
+        endAngle,
+        value,
+      });
+      return;
+    }
+
     for (const [aRef, bRef, cRef] of triples) {
       const a = resolvePoint(aRef, landmarks, jointPositions, customJoints);
       const b = resolvePoint(bRef, landmarks, jointPositions, customJoints);

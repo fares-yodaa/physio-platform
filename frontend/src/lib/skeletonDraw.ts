@@ -1,10 +1,10 @@
 import type { Landmark, JointPosition, CustomJoint, JointAngles, RepThresholds } from '../types';
 import type { AngleArc } from './editorAngles';
+import { resolvePoint } from './editorAngles';
 import {
   BODY_LANDMARKS,
   BODY_CONNECTIONS,
   JOINT_ANGLE_DEFINITIONS,
-  LANDMARK_INDEX,
 } from './constants';
 import { classifyZone } from './repThresholds';
 
@@ -70,13 +70,9 @@ export function drawSkeletonOverlay(ctx: CanvasRenderingContext2D, opts: Skeleto
   const targetByAngle = new Map(repTargets.map((t) => [t.angleId, t]));
 
   const point = (name: string): { x: number; y: number } | null => {
-    const override = jointPositions[name];
-    if (override) return { x: override.x * width, y: override.y * height };
-    const idx = LANDMARK_INDEX[name as keyof typeof LANDMARK_INDEX];
-    if (idx === undefined) return null;
-    const lm = landmarks[idx];
-    if (!lm || lm.visibility < 0.2) return null;
-    return { x: lm.x * width, y: lm.y * height };
+    const p = resolvePoint(name, landmarks, jointPositions, customJoints, 0.12);
+    if (!p) return null;
+    return { x: p.x * width, y: p.y * height };
   };
 
   // Full body skeleton (subtle)
@@ -102,6 +98,26 @@ export function drawSkeletonOverlay(ctx: CanvasRenderingContext2D, opts: Skeleto
     ctx.stroke();
   }
 
+  // Neck rotation stem: shoulder midpoint → nose
+  if (activeSet.has('nose')) {
+    const base = point('neck_base');
+    const nose = point('nose');
+    if (base && nose) {
+      ctx.beginPath();
+      ctx.moveTo(base.x, base.y);
+      ctx.lineTo(nose.x, nose.y);
+      ctx.strokeStyle = countingSet.has('neck')
+        ? 'rgba(251, 191, 36, 0.85)'
+        : 'rgba(34, 197, 94, 0.8)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(base.x, base.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.95)';
+      ctx.fill();
+    }
+  }
+
   // Angle arcs at counting joints
   for (const arc of angleArcs) {
     if (!countingSet.has(arc.id)) continue;
@@ -117,6 +133,13 @@ export function drawSkeletonOverlay(ctx: CanvasRenderingContext2D, opts: Skeleto
 
   // Joint dots
   for (const name of BODY_LANDMARKS) {
+    if (
+      (name === 'left_ear' || name === 'right_ear') &&
+      !activeSet.has(name) &&
+      !activeSet.has('nose')
+    ) {
+      continue;
+    }
     const p = point(name);
     if (!p) continue;
     const angleKey = angleAtLandmark(name);
