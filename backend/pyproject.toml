@@ -9,3 +9,6 @@ dependencies = [
   "pydantic",
   "python-multipart",
 ]
+
+[tool.vercel]
+entrypoint = "app.main:app"
