@@ -1,12 +1,22 @@
 from pathlib import Path
 import os
+import shutil
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-# backend/physio.db — keep this path stable so the seeded database ships with deploys
+# backend/physio.db ships with the deploy (current exercises + sessions)
 _BACKEND_DIR = Path(__file__).resolve().parents[2]
-_DEFAULT_SQLITE = _BACKEND_DIR / "physio.db"
+_BUNDLED_SQLITE = _BACKEND_DIR / "physio.db"
+
+# Vercel’s function filesystem is read-only except /tmp
+if os.getenv("VERCEL"):
+    _DEFAULT_SQLITE = Path("/tmp/physio.db")
+    if not _DEFAULT_SQLITE.exists() and _BUNDLED_SQLITE.exists():
+        shutil.copy(_BUNDLED_SQLITE, _DEFAULT_SQLITE)
+else:
+    _DEFAULT_SQLITE = _BUNDLED_SQLITE
+
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{_DEFAULT_SQLITE}")
 
 _connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
