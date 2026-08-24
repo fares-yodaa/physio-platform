@@ -1,0 +1,7 @@
+frontend
+backend/venv
+backend/.venv
+**/__pycache__
+.git
+.DS_Store
+node_modules

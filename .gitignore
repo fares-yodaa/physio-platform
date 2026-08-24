@@ -1,0 +1,31 @@
+# Dependencies
+frontend/node_modules
+backend/venv
+backend/.venv
+
+# Build
+frontend/dist
+frontend/dist-ssr
+
+# Python
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs / editor
+logs
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+node_modules/
+venv/
+.venv/
+dist/
