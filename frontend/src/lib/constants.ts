@@ -28,8 +28,6 @@ export const LANDMARK_INDEX: Record<LandmarkName, number> = Object.fromEntries(
  */
 export const BODY_LANDMARKS: LandmarkName[] = [
   'nose',
-  'left_ear',
-  'right_ear',
   'left_shoulder', 'right_shoulder',
   'left_elbow', 'right_elbow',
   'left_wrist', 'right_wrist',
@@ -52,10 +50,6 @@ export const BODY_CONNECTIONS: [LandmarkName, LandmarkName][] = [
   ['left_knee', 'left_ankle'],
   ['right_hip', 'right_knee'],
   ['right_knee', 'right_ankle'],
-  ['nose', 'left_ear'],
-  ['nose', 'right_ear'],
-  ['nose', 'left_shoulder'],
-  ['nose', 'right_shoulder'],
 ];
 
 /** Index-based connections (used by the simple skeleton overlay). */
@@ -119,7 +113,7 @@ export const JOINT_NAMES = Object.keys(JOINT_ANGLE_DEFINITIONS);
 /** Body part options for the doctor, with the joints they typically pre-select. */
 export const BODY_PARTS: { id: string; label: string; joints: LandmarkName[] }[] = [
   { id: 'full_body', label: 'Full Body', joints: BODY_LANDMARKS },
-  { id: 'neck', label: 'Neck', joints: ['nose', 'left_ear', 'right_ear', 'left_shoulder', 'right_shoulder'] },
+  { id: 'neck', label: 'Neck', joints: ['nose', 'left_shoulder', 'right_shoulder'] },
   { id: 'shoulder', label: 'Shoulder', joints: ['left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow'] },
   { id: 'arm', label: 'Arm / Elbow', joints: ['left_shoulder', 'left_elbow', 'left_wrist'] },
   { id: 'knee', label: 'Knee', joints: ['left_hip', 'left_knee', 'left_ankle'] },
@@ -141,8 +135,6 @@ export const BODY_PART_PRIMARY_ANGLE: Record<string, string> = {
 /** Plain-language labels doctors see instead of landmark ids. */
 export const FRIENDLY_JOINT_LABELS: Record<string, string> = {
   nose: 'Nose',
-  left_ear: 'Left ear',
-  right_ear: 'Right ear',
   left_shoulder: 'Left shoulder',
   right_shoulder: 'Right shoulder',
   left_elbow: 'Left elbow',

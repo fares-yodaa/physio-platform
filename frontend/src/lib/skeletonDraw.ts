@@ -98,7 +98,8 @@ export function drawSkeletonOverlay(ctx: CanvasRenderingContext2D, opts: Skeleto
     ctx.stroke();
   }
 
-  // Neck rotation stem: shoulder midpoint → nose
+  // Neck rotation: only the nose should move. Draw a stem from the
+  // shoulder midpoint — no extra joint, so it does not look like a stuck point.
   if (activeSet.has('nose')) {
     const base = point('neck_base');
     const nose = point('nose');
@@ -107,14 +108,10 @@ export function drawSkeletonOverlay(ctx: CanvasRenderingContext2D, opts: Skeleto
       ctx.moveTo(base.x, base.y);
       ctx.lineTo(nose.x, nose.y);
       ctx.strokeStyle = countingSet.has('neck')
-        ? 'rgba(251, 191, 36, 0.85)'
-        : 'rgba(34, 197, 94, 0.8)';
+        ? 'rgba(251, 191, 36, 0.9)'
+        : 'rgba(34, 197, 94, 0.85)';
       ctx.lineWidth = 3;
       ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(base.x, base.y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(148, 163, 184, 0.95)';
-      ctx.fill();
     }
   }
 
@@ -133,13 +130,6 @@ export function drawSkeletonOverlay(ctx: CanvasRenderingContext2D, opts: Skeleto
 
   // Joint dots
   for (const name of BODY_LANDMARKS) {
-    if (
-      (name === 'left_ear' || name === 'right_ear') &&
-      !activeSet.has(name) &&
-      !activeSet.has('nose')
-    ) {
-      continue;
-    }
     const p = point(name);
     if (!p) continue;
     const angleKey = angleAtLandmark(name);

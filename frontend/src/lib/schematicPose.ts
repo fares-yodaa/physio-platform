@@ -83,8 +83,6 @@ export function schematicPositionsForAngles(angleValues: Record<string, number>)
     const span = (pos.right_shoulder.x - pos.left_shoulder.x) / 2;
     const t = Math.max(0, Math.min(1, angleValues.neck / 70));
     pos.nose = { x: midX + span * t * 0.9, y: pos.nose.y };
-    if (pos.left_ear) pos.left_ear = { x: 0.42 + span * t * 0.55, y: pos.left_ear.y };
-    if (pos.right_ear) pos.right_ear = { x: 0.58 + span * t * 0.4, y: pos.right_ear.y };
   }
   return pos;
 }
