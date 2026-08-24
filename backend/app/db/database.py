@@ -5,9 +5,13 @@ import shutil
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-# backend/physio.db ships with the deploy (current exercises + sessions)
+# Seeded database ships with the deploy (current exercises + sessions)
+_APP_DIR = Path(__file__).resolve().parents[1]
 _BACKEND_DIR = Path(__file__).resolve().parents[2]
-_BUNDLED_SQLITE = _BACKEND_DIR / "physio.db"
+_BUNDLED_SQLITE = next(
+    (p for p in (_APP_DIR / "physio.db", _BACKEND_DIR / "physio.db") if p.exists()),
+    _BACKEND_DIR / "physio.db",
+)
 
 # Vercel’s function filesystem is read-only except /tmp
 if os.getenv("VERCEL"):
