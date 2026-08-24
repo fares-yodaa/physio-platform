@@ -25,6 +25,7 @@ logs
 .vscode/*
 !.vscode/extensions.json
 .idea
+.vercel
 node_modules/
 venv/
 .venv/

@@ -33,12 +33,20 @@ npm run dev
 
 The frontend dev server proxies `/api` requests to the backend at `localhost:8000`.
 
+## Live (free)
+
+Send this to your supervisor:
+
+- **App**: https://physio-platform-lovat.vercel.app
+- **API**: https://physio-platform-api.vercel.app
+- **Code**: https://github.com/fares-yodaa/physio-platform
+
+The 5 existing exercises and 2 sessions are included. New data saved after deploy may not last, because the database runs on a serverless disk.
+
 ## Deploy (free)
 
-- **Frontend**: Vercel (`frontend/`, set `VITE_API_URL` to the backend URL)
-- **Backend**: Render free web service (`backend/`)
-
-Existing exercises and sessions live in `backend/physio.db` and are included in the backend deploy. On Render’s free plan the disk resets when the service sleeps, so that original data comes back; new rows added after deploy may not last.
+- **Frontend**: Vercel (`frontend/`, `VITE_API_URL=https://physio-platform-api.vercel.app`)
+- **Backend**: Vercel FastAPI (`backend/`, SQLite file `physio.db` is included)
 
 ## How it works
 
