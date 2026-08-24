@@ -529,7 +529,10 @@ export default function ExerciseBuilder() {
                     <button
                       key={bp.id}
                       type="button"
-                      onClick={() => setBodyPart(bp.id)}
+                      onClick={() => {
+                        setBodyPart(bp.id);
+                        setSelectedJoints([...bp.joints]);
+                      }}
                       className={`px-4 py-2 rounded-xl text-sm border transition-colors ${
                         bodyPart === bp.id
                           ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'

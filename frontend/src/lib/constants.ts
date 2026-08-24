@@ -66,6 +66,7 @@ export const SKELETON_CONNECTIONS: [number, number][] = [
  * Used for the simple angle readout and rep counting.
  */
 export const JOINT_ANGLE_DEFINITIONS: Record<string, [LandmarkName, LandmarkName, LandmarkName]> = {
+  neck: ['left_shoulder', 'nose', 'right_shoulder'],
   left_elbow: ['left_shoulder', 'left_elbow', 'left_wrist'],
   right_elbow: ['right_shoulder', 'right_elbow', 'right_wrist'],
   left_shoulder: ['left_elbow', 'left_shoulder', 'left_hip'],
@@ -83,6 +84,11 @@ export const JOINT_ANGLE_DEFINITIONS: Record<string, [LandmarkName, LandmarkName
 export const ANGLE_TRIPLE_FALLBACKS: Partial<
   Record<string, [LandmarkName, LandmarkName, LandmarkName][]>
 > = {
+  neck: [
+    ['left_ear', 'nose', 'right_ear'],
+    ['left_shoulder', 'nose', 'left_hip'],
+    ['right_shoulder', 'nose', 'right_hip'],
+  ],
   left_shoulder: [
     ['left_elbow', 'left_shoulder', 'right_shoulder'],
     ['left_elbow', 'left_shoulder', 'right_hip'],
@@ -109,6 +115,7 @@ export const JOINT_NAMES = Object.keys(JOINT_ANGLE_DEFINITIONS);
 /** Body part options for the doctor, with the joints they typically pre-select. */
 export const BODY_PARTS: { id: string; label: string; joints: LandmarkName[] }[] = [
   { id: 'full_body', label: 'Full Body', joints: BODY_LANDMARKS },
+  { id: 'neck', label: 'Neck', joints: ['nose', 'left_shoulder', 'right_shoulder'] },
   { id: 'shoulder', label: 'Shoulder', joints: ['left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow'] },
   { id: 'arm', label: 'Arm / Elbow', joints: ['left_shoulder', 'left_elbow', 'left_wrist'] },
   { id: 'knee', label: 'Knee', joints: ['left_hip', 'left_knee', 'left_ankle'] },
@@ -119,6 +126,7 @@ export const BODY_PARTS: { id: string; label: string; joints: LandmarkName[] }[]
 /** Default angle used for rep counting per body part (auto-selected for doctors). */
 export const BODY_PART_PRIMARY_ANGLE: Record<string, string> = {
   full_body: 'left_elbow',
+  neck: 'neck',
   shoulder: 'left_shoulder',
   arm: 'left_elbow',
   knee: 'left_knee',
@@ -144,6 +152,7 @@ export const FRIENDLY_JOINT_LABELS: Record<string, string> = {
 };
 
 export const FRIENDLY_ANGLE_LABELS: Record<string, string> = {
+  neck: 'Neck bend',
   left_elbow: 'Elbow bend',
   right_elbow: 'Elbow bend (R)',
   left_shoulder: 'Shoulder raise',
